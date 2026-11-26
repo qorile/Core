@@ -67,12 +67,14 @@ class ManagerConf extends AsteriskConfigClass
             'CDR(recordingfile)',
         ];
         $amiPort = PbxSettings::getPortByKey(PbxSettings::AMI_PORT);
+        $amiEnabled = PbxSettings::getValueByKey(PbxSettings::AMI_ENABLED) === '1';
+        $bindAddr = $amiEnabled ? '0.0.0.0' : '127.0.0.1';
 
         // Generate the configuration content
         $conf = "[general]\n" .
             "enabled = yes\n" .
             "port = {$amiPort};\n" .
-            "bindaddr = 0.0.0.0\n" .
+            "bindaddr = {$bindAddr}\n" .
             "displayconnects = no\n" .
             "allowmultiplelogin = yes\n" .
             "webenabled = yes\n" .
@@ -80,7 +82,7 @@ class ManagerConf extends AsteriskConfigClass
             'channelvars=' . implode(',', $vars) . "\n" .
             "httptimeout = 60\n\n";
 
-        if (PbxSettings::getValueByKey(PbxSettings::AMI_ENABLED) === '1') {
+        if ($amiEnabled) {
             // Fetch the Asterisk manager users
             /** @var \MikoPBX\Common\Models\AsteriskManagerUsers $managers */
             /** @var \MikoPBX\Common\Models\AsteriskManagerUsers $user */
